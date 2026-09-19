@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-export default function Login() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+export default function Register() {
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -14,12 +14,11 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    if (!formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError('Please fill in all fields.');
       return;
     }
 
-    // Abhi ke liye mock token save kar rahe hain (Backend Day 2 API aane tak)
     localStorage.setItem('token', 'mock_jwt_token_123');
     navigate('/');
   };
@@ -27,8 +26,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
-        <h2 className="text-2xl font-bold text-white text-center">StreamWeaver</h2>
-        <p className="text-slate-400 text-sm text-center mt-1">Sign in to manage ETL data streams</p>
+        <h2 className="text-2xl font-bold text-white text-center">Create Account</h2>
+        <p className="text-slate-400 text-sm text-center mt-1">Join StreamWeaver ETL Workspace</p>
 
         {error && (
           <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm">
@@ -37,6 +36,18 @@ export default function Login() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Ganesh Kher"
+              className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 text-sm"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
             <input
@@ -65,14 +76,14 @@ export default function Login() {
             type="submit"
             className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition shadow-lg shadow-indigo-600/20"
           >
-            Sign In
+            Create Account
           </button>
         </form>
 
         <p className="text-slate-400 text-sm text-center mt-6">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-indigo-400 hover:underline">
-            Register
+          Already have an account?{' '}
+          <Link to="/login" className="text-indigo-400 hover:underline">
+            Login
           </Link>
         </p>
       </div>
