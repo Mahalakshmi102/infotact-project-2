@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
+  UploadCloud,
   Database, 
   Workflow, 
   Cpu, 
@@ -19,6 +20,7 @@ export default function DashboardLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Upload Dataset', path: '/upload', icon: UploadCloud },
     { name: 'Datasets', path: '/datasets', icon: Database },
     { name: 'Pipeline Builder', path: '/pipeline-builder', icon: Workflow },
     { name: 'ETL Jobs', path: '/etl-jobs', icon: Cpu },
@@ -30,14 +32,12 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800">
         <div>
-          {/* Logo */}
           <div className="h-16 flex items-center px-6 border-b border-slate-800">
             <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
               StreamWeaver
             </h1>
           </div>
 
-          {/* 5 Menu Items */}
           <nav className="p-4 space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -62,7 +62,6 @@ export default function DashboardLayout() {
           </nav>
         </div>
 
-        {/* User Info Bottom */}
         <div className="p-4 border-t border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-semibold text-xs border border-indigo-500/30">
@@ -76,9 +75,8 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Area with Navbar */}
+      {/* Main Container */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
         <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-800">StreamWeaver Workspace</h2>
           <button
@@ -90,7 +88,6 @@ export default function DashboardLayout() {
           </button>
         </header>
 
-        {/* Dynamic Page Content */}
         <main className="flex-1 p-8 overflow-y-auto bg-slate-50">
           <Outlet />
         </main>

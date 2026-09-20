@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
+import Upload from './pages/Upload';
 import Datasets from './pages/Datasets';
 import PipelineBuilder from './pages/PipelineBuilder';
 import ETLJobs from './pages/ETLJobs';
@@ -17,10 +18,11 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Routes UI */}
+        {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="upload" element={<Upload />} />
             <Route path="datasets" element={<Datasets />} />
             <Route path="pipeline-builder" element={<PipelineBuilder />} />
             <Route path="etl-jobs" element={<ETLJobs />} />
