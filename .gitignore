@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.production
+*/.env
+
+# Build outputs
+dist/
+build/
+client/dist/
+
+# Uploads & Temporary staging
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Sample data files (generated)
+server/data/samples/*
+!server/data/samples/.gitkeep
+
+# OS generated files
+.DS_Store
+Thumbs.db
