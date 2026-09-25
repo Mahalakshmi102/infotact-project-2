@@ -30,6 +30,8 @@ app.get('/api/health', (req, res) => {
 // Mount Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/datasets', require('./routes/datasetRoutes'));
+app.use('/api/transformations', require('./routes/transformationRoutes'));
+app.use('/api/pipelines', require('./routes/pipelineRoutes'));
 
 // 404 handler
 app.use((req, res, next) => {

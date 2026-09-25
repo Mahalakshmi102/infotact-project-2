@@ -1,5 +1,29 @@
 const mongoose = require('mongoose');
 
+const columnSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dataType: {
+      type: String,
+      enum: ['string', 'integer', 'float', 'number', 'boolean', 'date', 'unknown'],
+      default: 'string',
+    },
+    sampleValues: {
+      type: [String],
+      default: [],
+    },
+    nullCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { _id: false }
+);
+
 const datasetSchema = new mongoose.Schema(
   {
     fileName: {
@@ -44,6 +68,10 @@ const datasetSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    columns: {
+      type: [columnSchema],
+      default: [],
+    },
     processingTimeMs: {
       type: Number,
       default: 0,
@@ -58,7 +86,9 @@ const datasetSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for querying user datasets ordered by newest first
+// Compound and field indexes for fast querying & column searches
 datasetSchema.index({ uploadedBy: 1, createdAt: -1 });
+datasetSchema.index({ uploadedBy: 1, status: 1 });
+datasetSchema.index({ 'columns.name': 1 });
 
 module.exports = mongoose.model('Dataset', datasetSchema);

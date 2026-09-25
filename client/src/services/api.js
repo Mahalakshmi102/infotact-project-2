@@ -56,6 +56,11 @@ export const datasetService = {
     return res.data;
   },
 
+  getDatasetById: async (id) => {
+    const res = await api.get(`/datasets/${id}`);
+    return res.data;
+  },
+
   uploadDataset: async (file, onProgress) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -77,6 +82,60 @@ export const datasetService = {
   deleteDataset: async (id) => {
     const res = await api.delete(`/datasets/${id}`);
     return res.data;
+  },
+};
+
+export const transformationService = {
+  getTransformations: async () => {
+    const res = await api.get('/transformations');
+    return res.data;
+  },
+
+  createTransformation: async (transformationData) => {
+    const res = await api.post('/transformations', transformationData);
+    return res.data;
+  },
+
+  deleteTransformation: async (id) => {
+    const res = await api.delete(`/transformations/${id}`);
+    return res.data;
+  },
+};
+
+export const pipelineService = {
+  getPipelines: async () => {
+    const res = await api.get('/pipelines');
+    return res.data;
+  },
+
+  getPipelineById: async (id) => {
+    const res = await api.get(`/pipelines/${id}`);
+    return res.data;
+  },
+
+  createPipeline: async (pipelineData) => {
+    const res = await api.post('/pipelines', pipelineData);
+    return res.data;
+  },
+
+  updatePipeline: async (id, pipelineData) => {
+    const res = await api.put(`/pipelines/${id}`, pipelineData);
+    return res.data;
+  },
+
+  deletePipeline: async (id) => {
+    const res = await api.delete(`/pipelines/${id}`);
+    return res.data;
+  },
+
+  runPreview: async (pipelineId, payload) => {
+    if (pipelineId) {
+      const res = await api.post(`/pipelines/${pipelineId}/preview`, payload || {});
+      return res.data;
+    } else {
+      const res = await api.post('/pipelines/preview', payload);
+      return res.data;
+    }
   },
 };
 
