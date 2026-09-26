@@ -4,6 +4,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
 import Datasets from './pages/Datasets';
+import DatasetDetails from './pages/DatasetDetails'; // <-- Import theek kiya
 import PipelineBuilder from './pages/PipelineBuilder';
 import ETLJobs from './pages/ETLJobs';
 import Settings from './pages/Settings';
@@ -24,6 +25,10 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="upload" element={<Upload />} />
             <Route path="datasets" element={<Datasets />} />
+            
+            {/* <-- Dataset Details Route yahan add kar diya hai --> */}
+            <Route path="datasets/:id" element={<DatasetDetails />} />
+            
             <Route path="pipeline-builder" element={<PipelineBuilder />} />
             <Route path="etl-jobs" element={<ETLJobs />} />
             <Route path="settings" element={<Settings />} />

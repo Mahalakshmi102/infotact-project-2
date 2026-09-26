@@ -1,78 +1,65 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { 
-  Database, 
-  RefreshCw, 
   FileSpreadsheet, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle, 
-  Loader2, 
-  Search 
+  Layers, 
+  Database, 
+  ArrowLeft, 
+  Hash, 
+  Type, 
+  Calendar, 
+  ToggleLeft,
+  Workflow,
+  Clock,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 import axios from 'axios';
 
-export default function Datasets() {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function DatasetDetails() {
+  const { id } = useParams();
+
+  // Day 6 State matching Backend/DB schema
+  const [dataset, setDataset] = useState({
+    _id: id || '1',
+    fileName: 'customer_transactions_large.csv',
+    fileSize: 2147483648, // 2 GB
+    fileType: 'csv',
+    totalRows: 5000000,
+    status: 'Completed',
+    uploadedAt: '2026-09-21T10:30:00Z',
+    columns: [
+      { name: 'transaction_id', type: 'Number', sample: '98412' },
+      { name: 'customer_name', type: 'String', sample: 'Rahul Sharma' },
+      { name: 'email', type: 'String', sample: 'rahul.s@example.com' },
+      { name: 'amount', type: 'Number', sample: '4500.50' },
+      { name: 'created_at', type: 'Date', sample: '2026-09-20' },
+      { name: 'is_verified', type: 'Boolean', sample: 'true' },
+    ],
+  });
+
   const [loading, setLoading] = useState(false);
-
-  // Mock initial dataset for UI demonstration matching Hari's Day 3 Dataset Schema
-  const [datasets, setDatasets] = useState([
-    {
-      _id: '1',
-      fileName: 'customer_transactions_large.csv',
-      fileSize: 2147483648, // 2GB
-      fileType: 'csv',
-      totalRows: 5000000,
-      status: 'Completed',
-      createdAt: '2026-09-21T10:30:00Z',
-    },
-    {
-      _id: '2',
-      fileName: 'telemetry_stream_log.json',
-      fileSize: 524288000, // 500MB
-      fileType: 'json',
-      totalRows: 1250000,
-      status: 'Processing',
-      createdAt: '2026-09-21T11:45:00Z',
-    },
-    {
-      _id: '3',
-      fileName: 'users_master_dump.csv',
-      fileSize: 104857600, // 100MB
-      fileType: 'csv',
-      totalRows: 250000,
-      status: 'Uploaded',
-      createdAt: '2026-09-21T12:15:00Z',
-    },
-    {
-      _id: '4',
-      fileName: 'corrupted_sales_archive.csv',
-      fileSize: 45097152, // ~43MB
-      fileType: 'csv',
-      totalRows: 0,
-      status: 'Failed',
-      createdAt: '2026-09-21T12:40:00Z',
-    },
-  ]);
-
-  // Fetch real datasets from backend if running
-  const fetchDatasets = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('http://localhost:5000/api/datasets');
-      if (response.data && Array.isArray(response.data)) {
-        setDatasets(response.data);
-      }
-    } catch (error) {
-      // Backend integration pending; keeping mock data active
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDatasets();
-  }, []);
+    const fetchDetails = async () => {
+      if (!id) return;
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await axios.get(`http://localhost:5000/api/datasets/${id}`);
+        if (res.data) {
+          setDataset(res.data);
+        }
+      } catch (err) {
+        // Backend live nahi hone par demo mock data render rahega
+        console.warn('Backend endpoint unreachable, using fallback dataset data:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDetails();
+  }, [id]);
 
   const formatFileSize = (bytes) => {
     if (!bytes || bytes === 0) return '0 Bytes';
@@ -82,135 +69,146 @@ export default function Datasets() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const formatDate = (dateString) => {
-    const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
-
-  // Status badge matching Day 4 requirements
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Uploaded':
+  const getTypeBadge = (type = '') => {
+    switch (type.toLowerCase()) {
+      case 'string':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
-            <Clock size={14} />
-            Uploaded
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+            <Type size={13} /> String
           </span>
         );
-      case 'Processing':
+      case 'number':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <Loader2 size={14} className="animate-spin" />
-            Processing
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <Hash size={13} /> Number
           </span>
         );
-      case 'Completed':
+      case 'date':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle2 size={14} />
-            Completed
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+            <Calendar size={13} /> Date
           </span>
         );
-      case 'Failed':
+      case 'boolean':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            <AlertCircle size={14} />
-            Failed
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+            <ToggleLeft size={13} /> Boolean
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
-            {status}
+          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            {type || 'Unknown'}
           </span>
         );
     }
   };
 
-  const filteredDatasets = datasets.filter((item) =>
-    item.fileName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Top Header & Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Dataset Collections</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            Monitor ingested files and stream processing pipeline statuses
-          </p>
-        </div>
-        <button
-          onClick={fetchDatasets}
-          disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm"
+        <Link
+          to="/datasets"
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 transition"
         >
-          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-          <span>Refresh</span>
-        </button>
+          <ArrowLeft size={16} /> Back to Datasets
+        </Link>
+        <Link
+          to="/pipeline-builder"
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm self-start sm:self-auto"
+        >
+          <Workflow size={16} /> Create Pipeline
+        </Link>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <div className="relative flex-1 max-w-md">
-          <Search size={18} className="absolute left-3 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search datasets by file name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500"
-          />
+      {/* Dataset Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+            <FileSpreadsheet size={24} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">File Name</p>
+            <p className="text-sm font-bold text-slate-800 truncate" title={dataset.fileName}>
+              {dataset.fileName}
+            </p>
+          </div>
         </div>
-        <div className="text-xs font-medium text-slate-500">
-          Showing <span className="font-bold text-slate-800">{filteredDatasets.length}</span> datasets
+
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+            <Database size={24} />
+          </div>
+          <div>
+            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total Rows</p>
+            <p className="text-lg font-bold text-slate-800">
+              {dataset.totalRows ? dataset.totalRows.toLocaleString() : '0'}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-sky-50 text-sky-600 rounded-xl">
+            <Layers size={24} />
+          </div>
+          <div>
+            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Columns</p>
+            <p className="text-lg font-bold text-slate-800">{dataset.columns?.length || 0}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+            <Hash size={24} />
+          </div>
+          <div>
+            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">File Size</p>
+            <p className="text-lg font-bold text-slate-800">{formatFileSize(dataset.fileSize)}</p>
+          </div>
         </div>
       </div>
 
-      {/* Dataset Table */}
+      {/* Schema / Columns Table */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between sm:items-center gap-2 bg-slate-50/50">
+          <div>
+            <h2 className="text-base font-bold text-slate-800">Detected Schema & Columns</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Auto-detected column names and inferred data types from streaming parser
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-medium">
+              Format: {dataset.fileType?.toUpperCase()}
+            </span>
+            <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-medium flex items-center gap-1">
+              <CheckCircle2 size={12} /> Ready for Pipeline
+            </span>
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="py-3.5 px-6">File Name</th>
-                <th className="py-3.5 px-6">Format</th>
-                <th className="py-3.5 px-6">File Size</th>
-                <th className="py-3.5 px-6">Total Rows</th>
-                <th className="py-3.5 px-6">Uploaded At</th>
-                <th className="py-3.5 px-6">Status</th>
+              <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="py-3 px-6">#</th>
+                <th className="py-3 px-6">Column Name</th>
+                <th className="py-3 px-6">Detected Data Type</th>
+                <th className="py-3 px-6">Sample Value</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-sm text-slate-700">
-              {filteredDatasets.length > 0 ? (
-                filteredDatasets.map((item) => (
-                  <tr key={item._id} className="hover:bg-slate-50/70 transition">
-                    <td className="py-4 px-6 font-medium text-slate-900 flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-                        <FileSpreadsheet size={18} />
-                      </div>
-                      <span className="truncate max-w-xs">{item.fileName}</span>
-                    </td>
-                    <td className="py-4 px-6 uppercase text-xs font-semibold text-slate-500">
-                      {item.fileType}
-                    </td>
-                    <td className="py-4 px-6 text-slate-600">{formatFileSize(item.fileSize)}</td>
-                    <td className="py-4 px-6 text-slate-600">
-                      {item.totalRows > 0 ? item.totalRows.toLocaleString() : '—'}
-                    </td>
-                    <td className="py-4 px-6 text-slate-500 text-xs">{formatDate(item.createdAt)}</td>
-                    <td className="py-4 px-6">{getStatusBadge(item.status)}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="py-12 text-center text-slate-400">
-                    <Database size={36} className="mx-auto text-slate-300 mb-2" />
-                    <p className="text-sm">No datasets found</p>
+              {dataset.columns?.map((col, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/70 transition">
+                  <td className="py-3.5 px-6 font-mono text-xs text-slate-400">{idx + 1}</td>
+                  <td className="py-3.5 px-6 font-semibold text-slate-800">{col.name}</td>
+                  <td className="py-3.5 px-6">{getTypeBadge(col.type)}</td>
+                  <td className="py-3.5 px-6 font-mono text-xs text-slate-500 bg-slate-50/40">
+                    {col.sample ?? '—'}
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
