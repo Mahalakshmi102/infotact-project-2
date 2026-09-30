@@ -4,6 +4,7 @@ import {
   UploadCloud,
   Database, 
   Workflow, 
+  Eye,             // <-- Added for Data Preview
   Cpu, 
   Settings as SettingsIcon, 
   LogOut,
@@ -23,6 +24,7 @@ export default function DashboardLayout() {
     { name: 'Upload Dataset', path: '/upload', icon: UploadCloud },
     { name: 'Datasets', path: '/datasets', icon: Database },
     { name: 'Pipeline Builder', path: '/pipeline-builder', icon: Workflow },
+    { name: 'Data Preview', path: '/preview', icon: Eye },   // <-- Added Day 9 item
     { name: 'ETL Jobs', path: '/etl-jobs', icon: Cpu },
     { name: 'Settings', path: '/settings', icon: SettingsIcon },
   ];
