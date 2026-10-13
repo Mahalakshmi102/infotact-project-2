@@ -13,19 +13,25 @@ const datasetSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    totalRows: {
+    headers: [{
+        type: String
+    }],
+    previewRows: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
+    previewCount: {
         type: Number,
         default: 0
+    },
+    tempFilePath: {
+        type: String,
+        default: ''
     },
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    },
-    status: {
-        type: String,
-        enum: ['Uploaded', 'Processing', 'Completed', 'Failed'],
-        default: 'Uploaded'
     },
     createdAt: {
         type: Date,
