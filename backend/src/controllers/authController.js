@@ -13,13 +13,13 @@ exports.register = async (req, res) => {
         await user.save();
 
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET || 'mysecretkey', { expiresIn: '7d' }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
+            res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
         });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        console.error('Register error:', err.message);
+        res.status(500).json({ msg: 'Server error during registration', error: err.message });
     }
 };
 
@@ -36,13 +36,13 @@ exports.login = async (req, res) => {
         }
 
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET || 'mysecretkey', { expiresIn: '7d' }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
+            res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
         });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        console.error('Login error:', err.message);
+        res.status(500).json({ msg: 'Server error during login', error: err.message });
     }
 };
 
@@ -51,7 +51,7 @@ exports.getProfile = async (req, res) => {
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
     } catch (err) {
-        console.error(err.message);
+        console.error('Profile error:', err.message);
         res.status(500).send('Server error');
     }
 };
